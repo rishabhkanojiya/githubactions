@@ -28,7 +28,7 @@ jobs:
       - run: npm i
       - run: npm test
       - run: npm run build
-      - run: ls
+      - run: ls build/
       - uses: jakejarvis/s3-sync-action@master
         with:
           args: --dryrun --follow-symlinks --delete
