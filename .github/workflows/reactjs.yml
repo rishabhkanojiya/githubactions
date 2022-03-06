@@ -33,6 +33,8 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
+      - run: ls
+      - run: ls build/
       - uses: actions/checkout@master
       - uses: jakejarvis/s3-sync-action@master
         with:
