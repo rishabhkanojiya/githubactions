@@ -1,7 +1,9 @@
 name: React Js - Create Build and Upload on S3
 
 on:
-  workflow_dispatch
+  workflow_dispatch:
+    branches: [main]
+
   push:
     branches: [main]
 
