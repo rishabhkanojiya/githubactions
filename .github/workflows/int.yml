@@ -8,10 +8,7 @@ on:
     branches: [int]
 
 jobs:
-  # SOURCE_DIR: ${{ secrets.INT_DEST_DIR }}
-
   build:
-    needs: backup
     runs-on: ubuntu-latest
 
     strategy:
