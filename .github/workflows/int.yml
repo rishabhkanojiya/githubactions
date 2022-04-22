@@ -8,21 +8,7 @@ on:
     branches: [int]
 
 jobs:
-  backup:
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v2
-      - uses: rishabhkanojiya/aws-copy-rm@remove
-        with:
-          args: --follow-symlinks --delete
-          # args: --acl public-read --follow-symlinks --delete
-        env:
-          AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          SOURCE_DIR: int/season/static-assets/build
-          # SOURCE_DIR: ${{ secrets.INT_DEST_DIR }}
+  # SOURCE_DIR: ${{ secrets.INT_DEST_DIR }}
 
   build:
     needs: backup
@@ -42,7 +28,18 @@ jobs:
       - run: npm i
       - run: npm test
       - run: npm run build
-      - uses: jakejarvis/s3-sync-action@master
+
+      - uses: rishabhkanojiya/aws-copy-rm@remove
+        with:
+          args: --follow-symlinks --delete
+          # args: --acl public-read --follow-symlinks --delete
+        env:
+          AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          SOURCE_DIR: int/season/static-assets/build
+
+      - uses: rishabhkanojiya/aws-copy-rm@copy
         with:
           args: --follow-symlinks --delete
           # args: --acl public-read --follow-symlinks --delete
