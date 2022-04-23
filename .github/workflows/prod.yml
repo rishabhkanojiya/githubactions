@@ -34,14 +34,10 @@ jobs:
           AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          # SOURCE_DIR_BACKUP: ${{ secrets.PROD_BACKUP_SOURCE_DIR }}
-          # DEST_DIR_BACKUP: ${{ secrets.PROD_BACKUP_DEST_DIR }}
-          # SOURCE_DIR_COPY: ${{ secrets.PROD_SOURCE_DIR }}
-          # DEST_DIR_COPY: ${{ secrets.PORD_DEST_DIR }}
-          SOURCE_DIR_BACKUP: prod/season/static-assets/build
-          DEST_DIR_BACKUP: prod/season/static-assets/backup
-          SOURCE_DIR_COPY: ./build
-          DEST_DIR_COPY: prod/season/static-assets/build
+          SOURCE_DIR_BACKUP: ${{ secrets.PROD_BACKUP_SOURCE_DIR }}
+          DEST_DIR_BACKUP: ${{ secrets.PROD_BACKUP_DEST_DIR }}
+          SOURCE_DIR_COPY: ${{ secrets.PROD_SOURCE_DIR }}
+          DEST_DIR_COPY: ${{ secrets.PORD_DEST_DIR }}
 
       # - uses: rishabhkanojiya/aws-copy-rm@remove
       #   with:
