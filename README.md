@@ -17,3 +17,15 @@ This simple workflow for backing up and uploading code to s3 folder [vanilla AWS
 | `INT_DEST_DIR`           | `int/season/static-assets/build`   | `secret env` | **Yes**  |
 | `INT_BACKUP_SOURCE_DIR`  | `int/season/static-assets/build`   | `secret env` | **Yes**  |
 | `INT_BACKUP_DEST_DIR`    | `int/season/static-assets/backup`  | `secret env` | **Yes**  |
+
+## Workflows
+
+    .
+    ├── ...
+    ├── .github
+    │   ├── workflows
+    │       ├── int.yml (WorkFlow File for Int)
+    │       ├── prod.yml (WorkFlow File for Prod)
+    └── ...
+
+Rishabh Kanojiya : [aws-copy-rm](https://github.com/rishabhkanojiya/aws-copy-rm)
