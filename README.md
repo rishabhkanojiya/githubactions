@@ -9,11 +9,11 @@ This simple workflow for backing up and uploading code to s3 folder [vanilla AWS
 | `AWS_ACCESS_KEY_ID`      |                                    | `secret env` | **Yes**  |
 | `AWS_SECRET_ACCESS_KEY`  |                                    | `secret env` | **Yes**  |
 | `AWS_S3_BUCKET`          | `copy-rm-test-bucket`              | `secret env` | **Yes**  |
-| `PROD_SOURCE_DIR`        | `./build`                          | `secret env` | **Yes**  |
+| `PROD_SOURCE_DIR`        | `./Dot.net.files.test.web/build`   | `secret env` | **Yes**  |
 | `PORD_DEST_DIR`          | `prod/season/static-assets/build`  | `secret env` | **Yes**  |
 | `PROD_BACKUP_SOURCE_DIR` | `prod/season/static-assets/build`  | `secret env` | **Yes**  |
 | `PROD_BACKUP_DEST_DIR`   | `prod/season/static-assets/backup` | `secret env` | **Yes**  |
-| `INT_SOURCE_DIR`         | `./build`                          | `secret env` | **Yes**  |
+| `INT_SOURCE_DIR`         | `./Dot.net.files.test.web/build`   | `secret env` | **Yes**  |
 | `INT_DEST_DIR`           | `int/season/static-assets/build`   | `secret env` | **Yes**  |
 | `INT_BACKUP_SOURCE_DIR`  | `int/season/static-assets/build`   | `secret env` | **Yes**  |
 | `INT_BACKUP_DEST_DIR`    | `int/season/static-assets/backup`  | `secret env` | **Yes**  |
