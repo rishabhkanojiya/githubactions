@@ -1,0 +1,152 @@
+name: Build Upload Pipeline
+# https://github.blog/2022-02-02-build-ci-cd-pipeline-github-actions-four-steps/
+on:
+  workflow_dispatch:
+    branches: [master]
+
+  push:
+    branches: [master]
+
+jobs:
+  build:
+    name: Creating Build
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: Dot.net.files.test.web
+
+    steps:
+      - name: Run Checkout
+        uses: actions/checkout@v3
+
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          cache: "yarn"
+          cache-dependency-path: "**/yarn.lock"
+          #  use below in case of using npm
+          # cache-dependency-path: "**/package-lock.json"
+
+      - name: Installing Packages
+        run: npm i
+      - name: Running Tests
+        run: npm test
+      - name: Creating Build
+        run: npm run build
+
+      - name: Cache Build
+        id: cache-react-build
+        uses: actions/cache@v3
+        with:
+          path: |
+            **/build
+          key: ${{ runner.os }}-cache-react-build-${{ hashFiles('**/public/version.json') }}
+
+      - name: list files
+        run: ls ./build/static/js
+
+  DeployDev:
+    needs: build
+    name: Deploy On Dev
+    runs-on: ubuntu-latest
+    environment:
+      name: Dev
+      url: https://dev.com
+
+    defaults:
+      run:
+        working-directory: Dot.net.files.test.web
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Restoring Build Cache
+        id: cache-react-build
+        uses: actions/cache@v3
+        with:
+          path: |
+            **/build
+          key: ${{ runner.os }}-cache-react-build-${{ hashFiles('**/public/version.json') }}
+
+      - name: Removing old Build
+        uses: rishabhkanojiya/aws-copy-rm@remove
+        with:
+          args: --follow-symlinks --delete
+          # args: --acl public-read --follow-symlinks --delete
+        env:
+          AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          SOURCE_DIR_BACKUP: int/season/static-assets/build
+
+      - name: Copying New Build on Int
+        uses: rishabhkanojiya/aws-copy-rm@copy
+        with:
+          args: --follow-symlinks --delete
+          # args: --acl public-read --follow-symlinks --delete
+        env:
+          AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          SOURCE_DIR_COPY: ./build
+          DEST_DIR_COPY: int/season/static-assets/build
+
+  DeployProd:
+    needs: [build, DeployDev]
+    name: Deploy On Prod
+    runs-on: ubuntu-latest
+    environment:
+      name: Production
+      url: https://prod.com
+
+    defaults:
+      run:
+        working-directory: Dot.net.files.test.web
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Restoring Build Cache
+        id: cache-react-build
+        uses: actions/cache@v3
+        with:
+          path: |
+            **/build
+          key: ${{ runner.os }}-cache-react-build-${{ hashFiles('**/public/version.json') }}
+
+      - name: Backing up old Build
+        uses: rishabhkanojiya/aws-copy-rm@backup
+        with:
+          args: --follow-symlinks --delete
+          # args: --acl public-read --follow-symlinks --delete
+        env:
+          AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          SOURCE_DIR_BACKUP: ${{ secrets.PROD_BACKUP_SOURCE_DIR }}
+          DEST_DIR_BACKUP: ${{ secrets.PROD_BACKUP_DEST_DIR }}
+
+      - name: Removing old Build
+        uses: rishabhkanojiya/aws-copy-rm@remove
+        with:
+          args: --follow-symlinks --delete
+          # args: --acl public-read --follow-symlinks --delete
+        env:
+          AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          SOURCE_DIR_BACKUP: ${{ secrets.PROD_BACKUP_SOURCE_DIR }}
+
+      - name: Copying New Build on Production
+        uses: rishabhkanojiya/aws-copy-rm@copy
+        with:
+          args: --follow-symlinks --delete
+          # args: --acl public-read --follow-symlinks --delete
+        env:
+          AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          SOURCE_DIR_COPY: ${{ secrets.PROD_SOURCE_DIR }}
+          DEST_DIR_COPY: ${{ secrets.PORD_DEST_DIR }}

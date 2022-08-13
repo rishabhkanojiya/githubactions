@@ -3,10 +3,20 @@
   "tasks": [
     {
       "type": "npm",
-      "script": "start",
+      "script": "build",
+      "path": "Dot.net.files.test.web",
+      "group": "build",
       "problemMatcher": [],
-      "label": "npm: start",
-      "detail": "react-scripts start"
+      "label": "npm: build - Dot.net.files.test.web",
+      "detail": "react-app-rewired build && node builder.js"
+    },
+    {
+      "type": "npm",
+      "script": "start",
+      "path": "Dot.net.files.test.web",
+      "problemMatcher": [],
+      "label": "npm: start - Dot.net.files.test.web",
+      "detail": "react-app-rewired start"
     }
   ]
 }
