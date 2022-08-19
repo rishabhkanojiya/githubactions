@@ -4,8 +4,8 @@ on:
   workflow_dispatch:
     branches: [int]
 
-  push:
-    branches: [int]
+  # push:
+  #   branches: [int]
 
 jobs:
   build:

@@ -2,10 +2,10 @@ name: Build Upload Pipeline
 # https://github.blog/2022-02-02-build-ci-cd-pipeline-github-actions-four-steps/
 on:
   workflow_dispatch:
-    branches: [master]
+    branches: [main]
 
   push:
-    branches: [master]
+    branches: [main]
 
 jobs:
   build:
@@ -24,13 +24,37 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 16
-          cache: "yarn"
-          cache-dependency-path: "**/yarn.lock"
-          #  use below in case of using npm
-          # cache-dependency-path: "**/package-lock.json"
+          #  use below in case of using yarn
+          # cache: "yarn"
+          # cache-dependency-path: "**/yarn.lock"
+          cache: "npm"
+          cache-dependency-path: "**/package-lock.json"
 
-      - name: Installing Packages
-        run: npm i
+      - name: Cache node modules
+        id: cache-npm
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-node-modules
+        with:
+          # npm cache files are stored in `~/.npm` on Linux/macOS
+          path: |
+            **/node_modules
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package.json') }}
+          # restore-keys: |
+          #   ${{ runner.os }}-build-${{ env.cache-name }}-
+          #   ${{ runner.os }}-build-
+          #   ${{ runner.os }}-
+
+      - if: ${{ steps.cache-npm.outputs.cache-hit != 'true' }}
+        name: List the state of node modules
+        run: npm install
+
+        # continue-on-error: true
+        # run: npm list
+
+      # - name: Install dependencies
+      #   run: npm install
+
       - name: Running Tests
         run: npm test
       - name: Creating Build
@@ -79,7 +103,7 @@ jobs:
           AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          SOURCE_DIR_BACKUP: int/season/static-assets/build
+          SOURCE_DIR_BACKUP: ${{ secrets.BACKUP_SOURCE_DIR }}
 
       - name: Copying New Build on Int
         uses: rishabhkanojiya/aws-copy-rm@copy
@@ -90,8 +114,8 @@ jobs:
           AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          SOURCE_DIR_COPY: ./build
-          DEST_DIR_COPY: int/season/static-assets/build
+          SOURCE_DIR_COPY: ${{ secrets.SOURCE_DIR }}
+          DEST_DIR_COPY: ${{ secrets.DEST_DIR }}
 
   DeployProd:
     needs: [build, DeployDev]
@@ -125,8 +149,8 @@ jobs:
           AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          SOURCE_DIR_BACKUP: ${{ secrets.PROD_BACKUP_SOURCE_DIR }}
-          DEST_DIR_BACKUP: ${{ secrets.PROD_BACKUP_DEST_DIR }}
+          SOURCE_DIR_BACKUP: ${{ secrets.BACKUP_SOURCE_DIR }}
+          DEST_DIR_BACKUP: ${{ secrets.BACKUP_DEST_DIR }}
 
       - name: Removing old Build
         uses: rishabhkanojiya/aws-copy-rm@remove
@@ -137,7 +161,7 @@ jobs:
           AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          SOURCE_DIR_BACKUP: ${{ secrets.PROD_BACKUP_SOURCE_DIR }}
+          SOURCE_DIR_BACKUP: ${{ secrets.BACKUP_SOURCE_DIR }}
 
       - name: Copying New Build on Production
         uses: rishabhkanojiya/aws-copy-rm@copy
@@ -148,5 +172,5 @@ jobs:
           AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          SOURCE_DIR_COPY: ${{ secrets.PROD_SOURCE_DIR }}
-          DEST_DIR_COPY: ${{ secrets.PORD_DEST_DIR }}
+          SOURCE_DIR_COPY: ${{ secrets.SOURCE_DIR }}
+          DEST_DIR_COPY: ${{ secrets.DEST_DIR }}

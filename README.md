@@ -18,12 +18,27 @@ This simple workflow for backing up and uploading code to s3 folder [vanilla AWS
 | `INT_BACKUP_SOURCE_DIR`  | `int/season/static-assets/build`   | `secret env` | **Yes**  |
 | `INT_BACKUP_DEST_DIR`    | `int/season/static-assets/backup`  | `secret env` | **Yes**  |
 
+## Using Environents
+
+| Key                 | Value                              | Environent   | Required |
+| ------------------- | ---------------------------------- | ------------ | -------- |
+| `SOURCE_DIR`        | `./Dot.net.files.test.web/build`   | `Production` | **Yes**  |
+| `DEST_DIR`          | `prod/season/static-assets/build`  | `Production` | **Yes**  |
+| `BACKUP_SOURCE_DIR` | `prod/season/static-assets/build`  | `Production` | **Yes**  |
+| `BACKUP_DEST_DIR`   | `prod/season/static-assets/backup` | `Production` | **Yes**  |
+|                     |                                    |              |          |
+| `SOURCE_DIR`        | `./Dot.net.files.test.web/build`   | `Dev`        | **Yes**  |
+| `DEST_DIR`          | `int/season/static-assets/build`   | `Dev`        | **Yes**  |
+| `BACKUP_SOURCE_DIR` | `int/season/static-assets/build`   | `Dev`        | **Yes**  |
+| `BACKUP_DEST_DIR`   | `int/season/static-assets/backup`  | `Dev`        | **Yes**  |
+
 ## Workflows
 
     .
     ├── ...
     ├── .github
     │   ├── workflows
+    │       ├── pipeline.yml (WorkFlow File for Int then on Prod)
     │       ├── int.yml (WorkFlow File for Int)
     │       ├── prod.yml (WorkFlow File for Prod)
     └── ...
