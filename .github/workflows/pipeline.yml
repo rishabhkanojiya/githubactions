@@ -174,3 +174,21 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           SOURCE_DIR_COPY: ${{ secrets.SOURCE_DIR }}
           DEST_DIR_COPY: ${{ secrets.DEST_DIR }}
+
+  slackNotification:
+    runs-on: ubuntu-latest
+    name: Slack Notification
+    needs: [Build, DeployDev, DeployProd]
+    if: ${{ always() && !cancelled() }}
+    steps:
+      - uses: actions/checkout@v2
+      - name: Slack Notification
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_FOOTER: ""
+          SLACK_USERNAME: notification
+          SLACK_MSG_AUTHOR: ${{ github.actor }}
+          SLACK_ICON: https://user-images.githubusercontent.com/30200462/185666812-35fb9de3-de61-407b-9522-1c1222bad306.pngs
+          SLACK_COLOR: "${{ needs.DeployProd.result != 'success' && '#ee6055' || '#60d394' }}"
+          SLACK_TITLE: "${{ needs.DeployProd.result != 'success' && '❌ Build Upload Failed' || '🚀 Build Uploaded Successfully' }}"
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
