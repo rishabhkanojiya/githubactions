@@ -1,0 +1,171 @@
+name: Individual Build Upload Sequence
+
+on:
+  workflow_dispatch:
+    branches: [main]
+
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    name: Setup
+    uses: ./.github/workflows/nodeBuild.yml
+
+  css:
+    name: Uploading CSS
+    needs: build
+    uses: ./.github/workflows/removeCopy.yml
+    with:
+      args: "--exclude '*' --include 'css/*' ${{ needs.build.outputs.isDryrun == 'true' && '--dryrun' || ''}}"
+      shouldRun: ${{ needs.build.outputs.isCss == 'true' }}
+      version: ${{ needs.build.outputs.versionJson }}
+    secrets: inherit
+
+  images:
+    name: Uploading Images
+    needs: build
+    uses: ./.github/workflows/removeCopy.yml
+    with:
+      args: "--exclude '*' --include 'images/*' ${{ needs.build.outputs.isDryrun == 'true' && '--dryrun' || ''}}"
+      shouldRun: ${{ needs.build.outputs.isImage == 'true' }}
+      version: ${{ needs.build.outputs.versionJson }}
+    secrets: inherit
+
+  translations:
+    name: Uploading Translations
+    needs: build
+    uses: ./.github/workflows/removeCopy.yml
+    with:
+      args: "--exclude '*' --include 'translations/*' ${{ needs.build.outputs.isDryrun == 'true' && '--dryrun' || ''}}"
+      shouldRun: ${{ needs.build.outputs.isTrans == 'true' }}
+      version: ${{ needs.build.outputs.versionJson }}
+    secrets: inherit
+
+  configs:
+    name: Uploading Configs
+    needs: build
+    uses: ./.github/workflows/removeCopy.yml
+    with:
+      args: "--exclude '*' --include 'configs/*' ${{ needs.build.outputs.isDryrun == 'true' && '--dryrun' || ''}}"
+      shouldRun: ${{ needs.build.outputs.isConfig == 'true' }}
+      version: ${{ needs.build.outputs.versionJson }}
+    secrets: inherit
+
+  javascript:
+    name: Uploading Javascript Files
+    needs: build
+    uses: ./.github/workflows/removeCopy.yml
+    with:
+      args: "--exclude '*' --include 'js/*' --include 'asset-manifest.json' --include 'static/*' ${{ needs.build.outputs.isDryrun == 'true' && '--dryrun' || ''}}"
+      shouldRun: ${{ needs.build.outputs.isMain == 'true' }}
+      version: ${{ needs.build.outputs.versionJson }}
+    secrets: inherit
+
+  prodCss:
+    name: Uploading CSS
+    needs: [build, css]
+    uses: ./.github/workflows/backupCopy.yml
+    with:
+      args: "--exclude '*' --include 'css/*' ${{ needs.build.outputs.isDryrun == 'true' && '--dryrun' || ''}}"
+      shouldRun: ${{ needs.css.result == 'success' }}
+      version: ${{ needs.build.outputs.versionJson }}
+    secrets: inherit
+
+  prodImages:
+    name: Uploading Images
+    needs: [build, images]
+    uses: ./.github/workflows/backupCopy.yml
+    with:
+      args: "--exclude '*' --include 'images/*' ${{ needs.build.outputs.isDryrun == 'true' && '--dryrun' || ''}}"
+      shouldRun: ${{ needs.images.result == 'success' }}
+      version: ${{ needs.build.outputs.versionJson }}
+    secrets: inherit
+
+  prodTranslations:
+    name: Uploading Translations
+    needs: [build, translations]
+    uses: ./.github/workflows/backupCopy.yml
+    with:
+      args: "--exclude '*' --include 'translations/*' ${{ needs.build.outputs.isDryrun == 'true' && '--dryrun' || ''}}"
+      shouldRun: ${{ needs.translations.result == 'success' }}
+      version: ${{ needs.build.outputs.versionJson }}
+    secrets: inherit
+
+  prodConfigs:
+    name: Uploading Configs Files
+    needs: [build, configs]
+    uses: ./.github/workflows/backupCopy.yml
+    with:
+      args: "--exclude '*' --include 'configs/*' ${{ needs.build.outputs.isDryrun == 'true' && '--dryrun' || ''}}"
+      shouldRun: ${{ needs.configs.result == 'success' }}
+      version: ${{ needs.build.outputs.versionJson }}
+    secrets: inherit
+
+  prodJavascript:
+    name: Uploading Javascript Files
+    needs: [build, javascript]
+    uses: ./.github/workflows/backupCopy.yml
+    with:
+      args: "--exclude '*' --include 'js/*' --include 'asset-manifest.json' --include 'static/*' ${{ needs.build.outputs.isDryrun == 'true' && '--dryrun' || ''}}"
+      shouldRun: ${{ needs.javascript.result == 'success' }}
+      version: ${{ needs.build.outputs.versionJson }}
+    secrets: inherit
+
+  slackNotification:
+    runs-on: ubuntu-latest
+    name: Slack Notification
+
+    defaults:
+      run:
+        working-directory: Dot.net.files.test.web
+
+    needs:
+      [
+        build,
+        css,
+        images,
+        translations,
+        configs,
+        javascript,
+        prodCss,
+        prodImages,
+        prodTranslations,
+        prodConfigs,
+        prodJavascript,
+      ]
+    if: ${{ always() && !cancelled() }}
+    steps:
+      - uses: actions/checkout@v3
+
+      - id: set_msg_data
+        name: Generate a status for Slack
+        run: bash ./public/msg.sh
+        env:
+          isCss: ${{ needs.build.outputs.isCss }}
+          isImage: ${{ needs.build.outputs.isImage }}
+          isTrans: ${{ needs.build.outputs.isTrans }}
+          isConfig: ${{ needs.build.outputs.isConfig }}
+          isMain: ${{ needs.build.outputs.isMain }}
+          prodCss: ${{ needs.prodCss.result }}
+          prodImages: ${{ needs.prodImages.result }}
+          prodTranslations: ${{ needs.prodTranslations.result }}
+          prodConfigs: ${{ needs.prodConfigs.result }}
+          prodJavascript: ${{ needs.prodJavascript.result }}
+      - name: Slack Notification
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_FOOTER: ""
+          SLACK_USERNAME: notification
+          SLACK_MSG_AUTHOR: ${{ github.actor }}
+          SLACK_ICON: https://user-images.githubusercontent.com/30200462/185666812-35fb9de3-de61-407b-9522-1c1222bad306.pngs
+          SLACK_COLOR: "${{ steps.set_msg_data.outputs.hasProcessFailed == 'true' && '#ee6055' || '#60d394' }}"
+          SLACK_TITLE: "${{ steps.set_msg_data.outputs.hasProcessFailed == 'true' && '❌ Build Upload Failed' || '🚀 Build Uploaded Successfully' }}"
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+
+    # This section simply notifies a slack channel when the process fails or pass.
+    # The message contains the following information:
+    # 1. the user who initiated the actions.
+    # 2. the branch that is currently being pushed
+    # 3. the action that is being performed
+    # 4. final commit message
