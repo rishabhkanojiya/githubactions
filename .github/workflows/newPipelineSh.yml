@@ -1,4 +1,4 @@
-name: Individual Build Upload (Using Docker)
+name: Individual Build Upload (Using Script)
 
 on:
   workflow_dispatch:
@@ -15,108 +15,118 @@ jobs:
   css:
     name: Uploading CSS
     needs: build
-    uses: ./.github/workflows/removeCopy.yml
+    uses: ./.github/workflows/removeCopySh.yml
     with:
       args: "--exclude '*' --include 'css/*' ${{ needs.build.outputs.isDryrun == 'true' && '--dryrun' || ''}}"
       shouldRun: ${{ needs.build.outputs.isCss == 'true' }}
       version: ${{ needs.build.outputs.versionJson }}
+      IS_PROD: "false"
       IS_RM: "true"
     secrets: inherit
 
   images:
     name: Uploading Images
     needs: build
-    uses: ./.github/workflows/removeCopy.yml
+    uses: ./.github/workflows/removeCopySh.yml
     with:
       args: "--exclude '*' --include 'images/*' ${{ needs.build.outputs.isDryrun == 'true' && '--dryrun' || ''}}"
       shouldRun: ${{ needs.build.outputs.isImage == 'true' }}
       version: ${{ needs.build.outputs.versionJson }}
+      IS_PROD: "false"
     secrets: inherit
 
   translations:
     name: Uploading Translations
     needs: build
-    uses: ./.github/workflows/removeCopy.yml
+    uses: ./.github/workflows/removeCopySh.yml
     with:
       args: "--exclude '*' --include 'translations/*' ${{ needs.build.outputs.isDryrun == 'true' && '--dryrun' || ''}}"
       shouldRun: ${{ needs.build.outputs.isTrans == 'true' }}
       version: ${{ needs.build.outputs.versionJson }}
+      IS_PROD: "false"
       IS_RM: "true"
     secrets: inherit
 
   configs:
     name: Uploading Configs
     needs: build
-    uses: ./.github/workflows/removeCopy.yml
+    uses: ./.github/workflows/removeCopySh.yml
     with:
       args: "--exclude '*' --include 'configs/*' ${{ needs.build.outputs.isDryrun == 'true' && '--dryrun' || ''}}"
       shouldRun: ${{ needs.build.outputs.isConfig == 'true' }}
       version: ${{ needs.build.outputs.versionJson }}
+      IS_PROD: "false"
       IS_RM: "true"
     secrets: inherit
 
   javascript:
     name: Uploading Javascript Files
     needs: build
-    uses: ./.github/workflows/removeCopy.yml
+    uses: ./.github/workflows/removeCopySh.yml
     with:
       args: "--exclude '*' --include 'js/*' --include 'asset-manifest.json' --include 'static/*' ${{ needs.build.outputs.isDryrun == 'true' && '--dryrun' || ''}}"
       shouldRun: ${{ needs.build.outputs.isMain == 'true' }}
       version: ${{ needs.build.outputs.versionJson }}
+      IS_PROD: "false"
       IS_RM: "true"
     secrets: inherit
 
   prodCss:
     name: Uploading CSS
     needs: [build, css]
-    uses: ./.github/workflows/backupCopy.yml
+    uses: ./.github/workflows/removeCopySh.yml
     with:
       args: "--exclude '*' --include 'css/*' ${{ needs.build.outputs.isDryrun == 'true' && '--dryrun' || ''}}"
       shouldRun: ${{ needs.css.result == 'success' }}
       version: ${{ needs.build.outputs.versionJson }}
+      IS_PROD: "true"
       IS_RM: "true"
     secrets: inherit
 
   prodImages:
     name: Uploading Images
     needs: [build, images]
-    uses: ./.github/workflows/backupCopy.yml
+    uses: ./.github/workflows/removeCopySh.yml
     with:
       args: "--exclude '*' --include 'images/*' ${{ needs.build.outputs.isDryrun == 'true' && '--dryrun' || ''}}"
       shouldRun: ${{ needs.images.result == 'success' }}
       version: ${{ needs.build.outputs.versionJson }}
+      IS_PROD: "true"
     secrets: inherit
 
   prodTranslations:
     name: Uploading Translations
     needs: [build, translations]
-    uses: ./.github/workflows/backupCopy.yml
+    uses: ./.github/workflows/removeCopySh.yml
     with:
       args: "--exclude '*' --include 'translations/*' ${{ needs.build.outputs.isDryrun == 'true' && '--dryrun' || ''}}"
       shouldRun: ${{ needs.translations.result == 'success' }}
       version: ${{ needs.build.outputs.versionJson }}
+      IS_PROD: "true"
       IS_RM: "true"
     secrets: inherit
 
   prodConfigs:
     name: Uploading Configs Files
     needs: [build, configs]
-    uses: ./.github/workflows/backupCopy.yml
+    uses: ./.github/workflows/removeCopySh.yml
     with:
       args: "--exclude '*' --include 'configs/*' ${{ needs.build.outputs.isDryrun == 'true' && '--dryrun' || ''}}"
       shouldRun: ${{ needs.configs.result == 'success' }}
       version: ${{ needs.build.outputs.versionJson }}
       IS_RM: "true"
+      IS_PROD: "true"
     secrets: inherit
 
   prodJavascript:
     name: Uploading Javascript Files
     needs: [build, javascript]
-    uses: ./.github/workflows/backupCopy.yml
+    uses: ./.github/workflows/removeCopySh.yml
     with:
       args: "--exclude '*' --include 'js/*' --include 'asset-manifest.json' --include 'static/*' ${{ needs.build.outputs.isDryrun == 'true' && '--dryrun' || ''}}"
       shouldRun: ${{ needs.javascript.result == 'success' }}
       version: ${{ needs.build.outputs.versionJson }}
+      IS_PROD: "true"
       IS_RM: "true"
     secrets: inherit
 

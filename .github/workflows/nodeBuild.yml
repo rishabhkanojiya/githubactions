@@ -51,7 +51,7 @@ jobs:
       - id: set_var
         name: Load version.json
         run: |
-          content=`cat ./public/version.json`
+          content=`cat ./public/deploy/version.json`
           content="${content//'%'/'%25'}"
           content="${content//$'\n'/'%0A'}"
           content="${content//$'\r'/'%0D'}"

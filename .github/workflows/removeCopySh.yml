@@ -12,8 +12,12 @@ on:
       version:
         required: true
         type: string
+      IS_PROD:
+        required: true
+        type: string
       IS_RM:
         type: string
+
     secrets:
       AWS_S3_BUCKET:
         required: true
@@ -32,13 +36,13 @@ on:
 
 jobs:
   DeployDev:
-    name: Deploy On Development Environment
+    name: Deploy
     if: ${{ inputs.shouldRun == 'true' }}
     runs-on: ubuntu-latest
 
     environment:
-      name: Dev
-      url: https://dev.com
+      name: ${{ inputs.IS_PROD == 'true' && 'Production' || 'Dev'}}
+      url: ${{ inputs.IS_PROD == 'true' && 'https://prod.com' || 'https://dev.com'}}
 
     #  Using the "Dev" environment setting for environment variables and protection rules
 
@@ -56,35 +60,20 @@ jobs:
           path: |
             **/build
           key: ${{ runner.os }}-cache-react-build-${{ inputs.version }}
-        # restoring the cached build from "Step: Cache Build"
+      # restoring the cached build from "Step: Cache Build"
 
-      - name: Removing old Build
-        if: ${{ inputs.IS_RM == 'true' }}
-        uses: rishabhkanojiya/aws-copy-rm@remove
-        with:
-          args: ${{ inputs.args }}
-        #with:
-        #  args: --dryrun --acl public-read
+      - run: ls
+      - id: rem_copy
+        name: Remove Old Build And Copy New Build
+        run: bash ./public/deploy/build.sh
         env:
           AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          SOURCE_DIR_BACKUP: ${{ secrets.BACKUP_SOURCE_DIR }}
-
-      # executing the "rishabhkanojiya/aws-copy-rm@remove" action to remove the files from the s3 link
-
-      - name: Copying New Build on Int
-        uses: rishabhkanojiya/aws-copy-rm@copy
-        with:
-          args: ${{ inputs.args }}
-
-        #with:
-        #  args: --dryrun --acl public-read
-        env:
-          AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          SOURCE_DIR_COPY: ${{ secrets.SOURCE_DIR }}
+          SOURCE_DIR_COPY: ./build
           DEST_DIR_COPY: ${{ secrets.DEST_DIR }}
-
-      # Using the "rishabhkanojiya/aws-copy-rm@copy" action to sync the new build with the S3 link
+          SOURCE_DIR_BACKUP: ${{ secrets.BACKUP_SOURCE_DIR }}
+          DEST_DIR_BACKUP: ${{ secrets.BACKUP_DEST_DIR }}
+          args: ${{ inputs.args }}
+          IS_PROD: ${{ inputs.IS_PROD }}
+          IS_RM: ${{ inputs.IS_RM }}
