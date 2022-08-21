@@ -1,0 +1,87 @@
+name: Removing and Copying Files
+
+on:
+  workflow_call:
+    inputs:
+      args:
+        required: true
+        type: string
+      shouldRun:
+        required: true
+        type: string
+      version:
+        required: true
+        type: string
+    secrets:
+      AWS_S3_BUCKET:
+        required: true
+      AWS_ACCESS_KEY_ID:
+        required: true
+      AWS_SECRET_ACCESS_KEY:
+        required: true
+      SOURCE_DIR:
+        required: true
+      DEST_DIR:
+        required: true
+      BACKUP_SOURCE_DIR:
+        required: true
+      BACKUP_DEST_DIR:
+        required: true
+
+jobs:
+  DeployDev:
+    name: Deploy On Development Environment
+    if: ${{ inputs.shouldRun == 'true' }}
+    runs-on: ubuntu-latest
+
+    environment:
+      name: Dev
+      url: https://dev.com
+
+    #  Using the "Dev" environment setting for environment variables and protection rules
+
+    defaults:
+      run:
+        working-directory: Dot.net.files.test.web
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Restoring Build Cache
+        id: cache-react-build
+        uses: actions/cache@v3
+        with:
+          path: |
+            **/build
+          key: ${{ runner.os }}-cache-react-build-${{ inputs.version }}
+      # restoring the cached build from "Step: Cache Build"
+
+      - name: Removing old Build
+        uses: rishabhkanojiya/aws-copy-rm@remove
+        with:
+          args: ${{ inputs.args }}
+        #with:
+        #  args: --dryrun --acl public-read
+        env:
+          AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          SOURCE_DIR_BACKUP: ${{ secrets.BACKUP_SOURCE_DIR }}
+
+      # executing the "rishabhkanojiya/aws-copy-rm@remove" action to remove the files from the s3 link
+
+      - name: Copying New Build on Int
+        uses: rishabhkanojiya/aws-copy-rm@copy
+        with:
+          args: ${{ inputs.args }}
+
+        #with:
+        #  args: --dryrun --acl public-read
+        env:
+          AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          SOURCE_DIR_COPY: ${{ secrets.SOURCE_DIR }}
+          DEST_DIR_COPY: ${{ secrets.DEST_DIR }}
+
+      # Using the "rishabhkanojiya/aws-copy-rm@copy" action to sync the new build with the S3 link

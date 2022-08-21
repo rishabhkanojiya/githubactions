@@ -1,4 +1,10 @@
 {
-  "name": "github-action-build",
-  "version": "0.1.4"
+  "name": "github-action-test-build",
+  "version": "2.1.4",
+  "css": true,
+  "trans": false,
+  "images": true,
+  "main": true,
+  "configs": true,
+  "dryrun": false
 }

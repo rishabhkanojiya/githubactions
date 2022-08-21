@@ -38,9 +38,30 @@ This simple workflow for backing up and uploading code to s3 folder [vanilla AWS
     ├── ...
     ├── .github
     │   ├── workflows
+    │       ├── newPipeline.yml (WorkFlow File for Int then on Prod - Individual)
     │       ├── pipeline.yml (WorkFlow File for Int then on Prod)
     │       ├── int.yml (WorkFlow File for Int)
     │       ├── prod.yml (WorkFlow File for Prod)
+    └── ...
+
+## Reusable Workflows
+
+    .
+    ├── ...
+    ├── .github
+    │   ├── workflows
+    │       ├── backupCopy.yml
+    │       ├── newPipeline.yml
+    │       ├── removeCopy.yml
+    └── ...
+
+## Files Required :-
+
+    .
+    ├── ...
+    ├── public
+    │   ├── version.json (to version the build and choose what to upload)
+    │   ├── msg.sh (straightforward logic for determining slack status)
     └── ...
 
 Rishabh Kanojiya : [aws-copy-rm](https://github.com/rishabhkanojiya/aws-copy-rm)

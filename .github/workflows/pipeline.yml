@@ -7,11 +7,11 @@ name: Build Upload Pipeline
 
 on:
   workflow_dispatch:
-    branches: [main]
+    branches: [master]
   # "workflow dispatch" assists in manually dispatching actions.
 
-  push:
-    branches: [main]
+  # push:
+  #   branches: [master]
   # the "push" action begins once the code is pushed/merged in the "main" branch.
   # You can add multiple branches too.
   # for example : Branches: [main, prod]
