@@ -1,10 +1,11 @@
 {
-  "name": "github-action-test-build",
-  "version": "4.3.1",
+  "name": "github-action-build",
+  "version": "4.3.3",
   "css": true,
   "trans": true,
   "images": true,
   "main": true,
   "configs": true,
-  "dryrun": false
+  "dryrun": false,
+  "isDevOnly": true
 }

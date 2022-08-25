@@ -1,4 +1,4 @@
-name: Removing and Copying Files
+name: Backup, Remove and Copy Files
 
 on:
   workflow_call:
@@ -14,6 +14,7 @@ on:
         type: string
       IS_RM:
         type: string
+
     secrets:
       AWS_S3_BUCKET:
         required: true
@@ -29,6 +30,8 @@ on:
         required: true
       BACKUP_DEST_DIR:
         required: true
+      WORKING_DIRECTORY_KEY:
+        required: true
 
 jobs:
   DeployProd:
@@ -41,10 +44,6 @@ jobs:
 
     # Using the "Production" environment setting for environment variables and protection rules
     # This configuration allows you to halt production until the reviewers approve it.
-
-    defaults:
-      run:
-        working-directory: Dot.net.files.test.web
 
     steps:
       - uses: actions/checkout@v3

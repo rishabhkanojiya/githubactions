@@ -24,6 +24,9 @@ on:
       isDryrun:
         description: "Dryrun flag in JSON file"
         value: ${{ jobs.readJson.outputs.isDryrun }}
+      isDevOnly:
+        description: "Upload on Dev Only"
+        value: ${{ jobs.readJson.outputs.isDevOnly }}
 
 jobs:
   readJson:
@@ -33,6 +36,7 @@ jobs:
     defaults:
       run:
         working-directory: Dot.net.files.test.web
+        # "defaults" and "working-directory: Dot.net.files.test.web" are used here so that the job can look in this folder for the "package.json" file.
 
     outputs:
       versionJson: ${{fromJson(steps.set_var.outputs.versionJson).version}}
@@ -42,6 +46,7 @@ jobs:
       isMain: ${{fromJson(steps.set_var.outputs.versionJson).main}}
       isConfig: ${{fromJson(steps.set_var.outputs.versionJson).configs}}
       isDryrun: ${{fromJson(steps.set_var.outputs.versionJson).dryrun}}
+      isDevOnly: ${{fromJson(steps.set_var.outputs.versionJson).isDevOnly}}
 
     steps:
       - name: Run Checkout
@@ -69,7 +74,7 @@ jobs:
     defaults:
       run:
         working-directory: Dot.net.files.test.web
-    # "defaults" and "working-directory: Dot.net.files.test.web" are used here so that the job can look in this folder for the "package.json" file.
+        # "defaults" and "working-directory: Dot.net.files.test.web" are used here so that the job can look in this folder for the "package.json" file.
 
     steps:
       - name: Run Checkout

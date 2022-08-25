@@ -1,136 +1,83 @@
-name: Creating and Caching Node build
+name: Send Message on Slack
 
 on:
   workflow_call:
-    outputs:
-      versionJson:
-        description: "Version number in JSON file"
-        value: ${{ jobs.readJson.outputs.versionJson }}
-      isCss:
-        description: "Css flag in JSON file"
-        value: ${{ jobs.readJson.outputs.isCss }}
-      isTrans:
-        description: "Trans flag in JSON file"
-        value: ${{ jobs.readJson.outputs.isTrans }}
-      isImage:
-        description: "Image flag in JSON file"
-        value: ${{ jobs.readJson.outputs.isImage }}
-      isMain:
-        description: "Main flag in JSON file"
-        value: ${{ jobs.readJson.outputs.isMain }}
-      isConfig:
-        description: "Config flag in JSON file"
-        value: ${{ jobs.readJson.outputs.isConfig }}
-      isDryrun:
-        description: "Dryrun flag in JSON file"
-        value: ${{ jobs.readJson.outputs.isDryrun }}
+    secrets:
+      SLACK_WEBHOOK:
+        required: true
+# on:
+#   workflow_dispatch:
+#     branches: [main]
+
+#   push:
+#     branches: [test]
 
 jobs:
-  readJson:
-    name: Read Input File
+  slackMessage:
+    name: Get Data for slack Message
     runs-on: ubuntu-latest
 
-    defaults:
-      run:
-        working-directory: Dot.net.files.test.web
-
-    outputs:
-      versionJson: ${{fromJson(steps.set_var.outputs.versionJson).version}}
-      isCss: ${{fromJson(steps.set_var.outputs.versionJson).css}}
-      isTrans: ${{fromJson(steps.set_var.outputs.versionJson).trans}}
-      isImage: ${{fromJson(steps.set_var.outputs.versionJson).images}}
-      isMain: ${{fromJson(steps.set_var.outputs.versionJson).main}}
-      isConfig: ${{fromJson(steps.set_var.outputs.versionJson).configs}}
-      isDryrun: ${{fromJson(steps.set_var.outputs.versionJson).dryrun}}
-
     steps:
-      - name: Run Checkout
-        uses: actions/checkout@v3
-      - name: Run Build
-        run: ls
-      - id: set_var
-        name: Load version.json
-        run: |
-          content=`cat ./public/deploy/version.json`
-          content="${content//'%'/'%25'}"
-          content="${content//$'\n'/'%0A'}"
-          content="${content//$'\r'/'%0D'}"
-          echo "::set-output name=versionJson::$content"
+      - uses: actions/checkout@v3
 
-      - name: Output Value
-        run: |
-          echo "${{fromJson(steps.set_var.outputs.versionJson).version}}"
-
-  build:
-    name: Creating Build
-    needs: readJson
-    runs-on: ubuntu-latest
-
-    defaults:
-      run:
-        working-directory: Dot.net.files.test.web
-    # "defaults" and "working-directory: Dot.net.files.test.web" are used here so that the job can look in this folder for the "package.json" file.
-
-    steps:
-      - name: Run Checkout
-        uses: actions/checkout@v3
-
-      - name: Use Node.js
-        uses: actions/setup-node@v3
+      - id: set-result
+        name: Generate a status for Slack
+        uses: actions/github-script@v6
         with:
-          node-version: 16
-          #  use below in case of using yarn
-          # cache: "yarn"
-          # cache-dependency-path: "**/yarn.lock"
-          cache: "npm"
-          cache-dependency-path: "**/package-lock.json"
+          script: |
+            const makePayload = (data, jobDetails) => {
+              let status = false;
+              let commit = data?.head_commit?.message;
+              let isFailed = jobDetails?.jobs.find((job) => job.conclusion === "failure");
+              if (isFailed) {
+                status = true;
+                commit = `Failed at '${isFailed.name}'`;
+              }
 
-      # "cache-dependency-path" caches the node modules on every run.
-      # So it caches in "build," and it will not install node_modules again in the next job.
+              return {
+                name: data?.name,
+                userName: data?.actor?.login,
+                userImage: data?.actor?.avatar_url,
+                runs: data?.run_number,
+                status,
+                commit
+              };
+            };
 
-      - name: Cache node modules
-        id: cache-npm
-        uses: actions/cache@v3
+            const runDetails = await github.rest.actions.getWorkflowRun({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              run_id: context?.runId,
+            });
+
+            const jobDetails = await github.rest.actions.listJobsForWorkflowRun({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              run_id: context?.runId,
+            });
+
+
+            const data = makePayload(runDetails?.data, jobDetails?.data);
+
+            return data;
+      - run: echo "${{fromJson(steps.set-result.outputs.result).userName}}"
+      - run: echo "${{fromJson(steps.set-result.outputs.result).status}}"
+      - run: echo "${{fromJson(steps.set-result.outputs.result).commit}}"
+
+      - name: Slack Notification
+        uses: rtCamp/action-slack-notify@v2
         env:
-          cache-name: cache-node-modules
-        with:
-          path: |
-            **/node_modules
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package.json') }}
+          SLACK_FOOTER: ""
+          SLACK_USERNAME: Notification
+          SLACK_MSG_AUTHOR: ${{fromJson(steps.set-result.outputs.result).userName}}
+          SLACK_COLOR: "${{ fromJson(steps.set-result.outputs.result).status == true && '#ee6055' || '#60d394' }}"
+          SLACK_TITLE: "${{ fromJson(steps.set-result.outputs.result).status == true && '❌ Build Upload Failed' || '🚀 Build Uploaded Successfully' }}"
+          SLACK_MESSAGE: "${{ fromJson(steps.set-result.outputs.result).commit }}"
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
 
-      - if: ${{ steps.cache-npm.outputs.cache-hit != 'true' }}
-        name: Install Node Dependencies
-        run: npm install
-
-      # "actions/cache@v3" This caches the node modules as well, but at the workflow level.
-      # Even if the workflow starts, it will check for cache and if none is found, it will run "npm install."
-      # The key in this case is generated uniquely based on the data in "/package.json."
-      # As a result, the new key is generated whenever the "package.json" file is updated or a new package is installed.
-      # As a result, until a new package is installed, this workflow will always use the cached file.
-      # as a result of reducing the build generation time
-
-      - name: Running Tests
-        run: npm test
-      # basic node commands
-
-      - name: Cache Build
-        id: cache-react-build
-        uses: actions/cache@v3
-        with:
-          path: |
-            **/build
-          key: ${{ runner.os }}-cache-react-build-${{needs.readJson.outputs.versionJson}}
-
-      - if: ${{ steps.cache-react-build.outputs.cache-hit != 'true' }}
-        name: Creating Build
-        run: npm run build
-
-      # Step: Cache Build
-      # "actions/cache@v3" is used to cache the build so that it can be used in the next job.
-      # The reason for using this is that all files created in a job are destroyed after the job is completed.
-      # As a result, the "./build" generated by "npm install" is destroyed once the "build" job is completed.
-      # The key in this case is generated uniquely based on the data in "public/deploy/version.json."
-
-      - name: list files
-        run: ls ./build/static/js
-      # just for keeping track of the files
+    # This section simply notifies a slack channel when the process fails or pass.
+    # The message contains the following information:
+    # 1. the user who initiated the actions.
+    # 2. the branch that is currently being pushed
+    # 3. the action that is being performed
+    # 4. final commit message
