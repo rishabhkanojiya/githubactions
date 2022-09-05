@@ -19,7 +19,7 @@ on:
   # The action in the preceding example will be executed once the code is pushed/merged in the "main" and "prod" branches.
 
 env:
-  project_folder: Dot.net.files.test.web
+  project_folder: ${{ secrets.WORKING_DIRECTORY_KEY }}
 
 jobs:
   defineBaseDirectory:
