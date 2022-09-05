@@ -1,4 +1,10 @@
 name: Individual Build Upload (Using Script)
+# A github actions for backing up, removing, and uploading react code.
+# The actions perform the following tasks:
+# 1. Generates and caches a build.
+# 2. Publish the build to Integration.
+# 3. Wait for approval before uploading it to Prod; once approved, proceed with the production push.
+# 4. Sends a message on slack
 
 on:
   workflow_dispatch:
@@ -6,6 +12,11 @@ on:
 
   push:
     branches: [main]
+
+  # the "push" action begins once the code is pushed/merged in the "main" branch.
+  # You can add multiple branches too.
+  # for example : Branches: [main, prod]
+  # The action in the preceding example will be executed once the code is pushed/merged in the "main" and "prod" branches.
 
 defaults:
   run:
@@ -28,6 +39,9 @@ jobs:
       IS_PROD: "false"
       IS_RM: "true"
     secrets: inherit
+
+  # IS_PROD:- ("true"/"false")  Flag to specify environment and to create backup
+  # IS_RM:- ("true"/"false") Flag to remove build
 
   images:
     name: Uploading Images
