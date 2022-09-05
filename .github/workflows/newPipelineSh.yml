@@ -22,7 +22,8 @@ jobs:
   build:
     name: Setup
     uses: ./.github/workflows/nodeBuild.yml
-    working-directory: Dot.net.files.test.web
+    with:
+      working-directory: Dot.net.files.test.web
 
   css:
     name: Uploading CSS
