@@ -18,9 +18,6 @@ on:
   # for example : Branches: [main, prod]
   # The action in the preceding example will be executed once the code is pushed/merged in the "main" and "prod" branches.
 
-env:
-  project_folder: ${{ secrets.WORKING_DIRECTORY_KEY }}
-
 jobs:
   defineBaseDirectory:
     name: Define Base Directory
@@ -32,8 +29,10 @@ jobs:
       - name: Setting Up Working Directory Using Output
         id: setDirectory
         run: |
-          echo "some var: $SOME_VAR"
-          echo "::set-output name=workingDirectory::$project_folder"
+          echo "some var: $WORKING_DIRECTORY_KEY"
+          echo "::set-output name=workingDirectory::$WORKING_DIRECTORY_KEY"
+        env:
+          AWS_S3_BUCKET: ${{ secrets.WORKING_DIRECTORY_KEY }}
 
   build:
     name: Setup
