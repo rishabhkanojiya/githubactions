@@ -18,12 +18,27 @@ on:
   # for example : Branches: [main, prod]
   # The action in the preceding example will be executed once the code is pushed/merged in the "main" and "prod" branches.
 
+env:
+  project-folder: Dot.net.files.test.web
+
 jobs:
+  defineBaseDirectory:
+    name: Define Base Directory
+    outputs:
+      workingDirectory: ${{ steps.setDirectory.outputs.workingDirectory }}
+
+    steps:
+      - name: Setting Up Working Directory Using Output
+        id: setDirectory
+        run: |
+          echo "::set-output name=workingDirectory::$project-folder"
+
   build:
     name: Setup
+    needs: defineBaseDirectory
     uses: ./.github/workflows/nodeBuild.yml
     with:
-      project-folder: Dot.net.files.test.web
+      project-folder: ${{needs.defineBaseDirectory.outputs.workingDirectory}}
 
   css:
     name: Uploading CSS
