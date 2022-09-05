@@ -31,7 +31,7 @@ jobs:
               let isFailed = jobDetails?.jobs.find((job) => job.conclusion === "failure");
               if (isFailed) {
                 status = true;
-                commit = `Failed at '${isFailed.name}' @${data?.actor?.login}`;
+                commit = `Failed at '${isFailed.name}'`;
               }
 
               return {

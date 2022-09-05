@@ -64,7 +64,7 @@ jobs:
             **/build
           key: ${{ runner.os }}-cache-react-build-${{ inputs.version }}
       # restoring the cached build from "Step: Cache Build"
-      - run: ls ./build
+
       - id: rem_copy
         name: Remove Old Build And Copy New Build
         run: bash ./public/deploy/build.sh
