@@ -2,6 +2,12 @@ name: Creating and Caching Node build
 
 on:
   workflow_call:
+    inputs:
+      project-folder:
+        description: The folder containing the project to build
+        type: string
+        default: Dot.net.files.test.web
+
     outputs:
       versionJson:
         description: "Version number in JSON file"
@@ -33,10 +39,10 @@ jobs:
     name: Read Input File
     runs-on: ubuntu-latest
 
-    # defaults:
-    #   run:
-    #     working-directory: Dot.net.files.test.web
-    # "defaults" and "working-directory: Dot.net.files.test.web" are used here so that the job can look in this folder for the "package.json" file.
+    defaults:
+      run:
+        working-directory: ${{ inputs.project-folder }}
+        # "defaults" and "working-directory: Dot.net.files.test.web" are used here so that the job can look in this folder for the "package.json" file.
 
     outputs:
       versionJson: ${{fromJson(steps.set_var.outputs.versionJson).version}}

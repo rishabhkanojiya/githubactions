@@ -50,10 +50,10 @@ jobs:
 
     #  Using the "Dev" environment setting for environment variables and protection rules
 
-    # defaults:
-    #   run:
-    #     working-directory: Dot.net.files.test.web
-    # "defaults" and "working-directory: Dot.net.files.test.web" are used here so that the job can look in this folder for the "package.json" file.
+    defaults:
+      run:
+        working-directory: Dot.net.files.test.web
+        # "defaults" and "working-directory: Dot.net.files.test.web" are used here so that the job can look in this folder for the "package.json" file.
 
     steps:
       - uses: actions/checkout@v3
