@@ -17,6 +17,9 @@ on:
         type: string
       IS_RM:
         type: string
+      project_folder:
+        type: string
+        default: Dot.net.files.test.web
 
     secrets:
       AWS_S3_BUCKET:
@@ -52,7 +55,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: Dot.net.files.test.web
+        working-directory: ${{ inputs.project_folder }}
         # "defaults" and "working-directory: Dot.net.files.test.web" are used here so that the job can look in this folder for the "package.json" file.
 
     steps:

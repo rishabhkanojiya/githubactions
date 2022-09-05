@@ -40,7 +40,7 @@ jobs:
     needs: defineBaseDirectory
     uses: ./.github/workflows/nodeBuild.yml
     with:
-      project-folder: ${{needs.defineBaseDirectory.outputs.workingDirectory}}
+      project_folder: ${{needs.defineBaseDirectory.outputs.workingDirectory}}
 
   css:
     name: Uploading CSS
@@ -48,6 +48,7 @@ jobs:
     uses: ./.github/workflows/removeCopySh.yml
     with:
       args: "--exclude '*' --include 'css/*' ${{ needs.build.outputs.isDryrun == 'true' && '--dryrun' || ''}}"
+      project_folder: ${{needs.build.outputs.workingDirectory}}
       shouldRun: ${{ needs.build.outputs.isCss == 'true' }}
       version: ${{ needs.build.outputs.versionJson }}
       IS_PROD: "false"
@@ -63,6 +64,7 @@ jobs:
     uses: ./.github/workflows/removeCopySh.yml
     with:
       args: "--exclude '*' --include 'images/*' ${{ needs.build.outputs.isDryrun == 'true' && '--dryrun' || ''}}"
+      project_folder: ${{needs.build.outputs.workingDirectory}}
       shouldRun: ${{ needs.build.outputs.isImage == 'true' }}
       version: ${{ needs.build.outputs.versionJson }}
       IS_PROD: "false"
@@ -74,6 +76,7 @@ jobs:
     uses: ./.github/workflows/removeCopySh.yml
     with:
       args: "--exclude '*' --include 'translations/*' ${{ needs.build.outputs.isDryrun == 'true' && '--dryrun' || ''}}"
+      project_folder: ${{needs.build.outputs.workingDirectory}}
       shouldRun: ${{ needs.build.outputs.isTrans == 'true' }}
       version: ${{ needs.build.outputs.versionJson }}
       IS_PROD: "false"
@@ -86,6 +89,7 @@ jobs:
     uses: ./.github/workflows/removeCopySh.yml
     with:
       args: "--exclude '*' --include 'configs/*' ${{ needs.build.outputs.isDryrun == 'true' && '--dryrun' || ''}}"
+      project_folder: ${{needs.build.outputs.workingDirectory}}
       shouldRun: ${{ needs.build.outputs.isConfig == 'true' }}
       version: ${{ needs.build.outputs.versionJson }}
       IS_PROD: "false"
@@ -98,6 +102,7 @@ jobs:
     uses: ./.github/workflows/removeCopySh.yml
     with:
       args: "--exclude '*' --include 'js/*' --include 'asset-manifest.json' --include 'static/*' ${{ needs.build.outputs.isDryrun == 'true' && '--dryrun' || ''}}"
+      project_folder: ${{needs.build.outputs.workingDirectory}}
       shouldRun: ${{ needs.build.outputs.isMain == 'true' }}
       version: ${{ needs.build.outputs.versionJson }}
       IS_PROD: "false"
@@ -111,6 +116,7 @@ jobs:
     uses: ./.github/workflows/removeCopySh.yml
     with:
       args: "--exclude '*' --include 'css/*' ${{ needs.build.outputs.isDryrun == 'true' && '--dryrun' || ''}}"
+      project_folder: ${{needs.build.outputs.workingDirectory}}
       shouldRun: ${{ needs.css.result == 'success' }}
       version: ${{ needs.build.outputs.versionJson }}
       IS_PROD: "true"
@@ -124,6 +130,7 @@ jobs:
     uses: ./.github/workflows/removeCopySh.yml
     with:
       args: "--exclude '*' --include 'images/*' ${{ needs.build.outputs.isDryrun == 'true' && '--dryrun' || ''}}"
+      project_folder: ${{needs.build.outputs.workingDirectory}}
       shouldRun: ${{ needs.images.result == 'success' }}
       version: ${{ needs.build.outputs.versionJson }}
       IS_PROD: "true"
@@ -136,6 +143,7 @@ jobs:
     uses: ./.github/workflows/removeCopySh.yml
     with:
       args: "--exclude '*' --include 'translations/*' ${{ needs.build.outputs.isDryrun == 'true' && '--dryrun' || ''}}"
+      project_folder: ${{needs.build.outputs.workingDirectory}}
       shouldRun: ${{ needs.translations.result == 'success' }}
       version: ${{ needs.build.outputs.versionJson }}
       IS_PROD: "true"
@@ -149,6 +157,7 @@ jobs:
     uses: ./.github/workflows/removeCopySh.yml
     with:
       args: "--exclude '*' --include 'configs/*' ${{ needs.build.outputs.isDryrun == 'true' && '--dryrun' || ''}}"
+      project_folder: ${{needs.build.outputs.workingDirectory}}
       shouldRun: ${{ needs.configs.result == 'success' }}
       version: ${{ needs.build.outputs.versionJson }}
       IS_RM: "true"
@@ -162,6 +171,7 @@ jobs:
     uses: ./.github/workflows/removeCopySh.yml
     with:
       args: "--exclude '*' --include 'js/*' --include 'asset-manifest.json' --include 'static/*' ${{ needs.build.outputs.isDryrun == 'true' && '--dryrun' || ''}}"
+      project_folder: ${{needs.build.outputs.workingDirectory}}
       shouldRun: ${{ needs.javascript.result == 'success' }}
       version: ${{ needs.build.outputs.versionJson }}
       IS_PROD: "true"

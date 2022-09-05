@@ -3,7 +3,7 @@ name: Creating and Caching Node build
 on:
   workflow_call:
     inputs:
-      project-folder:
+      project_folder:
         description: The folder containing the project to build
         type: string
         default: Dot.net.files.test.web
@@ -41,7 +41,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: ${{ inputs.project-folder }}
+        working-directory: ${{ inputs.project_folder }}
         # "defaults" and "working-directory: Dot.net.files.test.web" are used here so that the job can look in this folder for the "package.json" file.
 
     outputs:
@@ -53,6 +53,7 @@ jobs:
       isConfig: ${{fromJson(steps.set_var.outputs.versionJson).configs}}
       isDryrun: ${{fromJson(steps.set_var.outputs.versionJson).dryrun}}
       isDevOnly: ${{fromJson(steps.set_var.outputs.versionJson).isDevOnly}}
+      project_folder: ${{inputs.project_folder}}
 
     steps:
       - name: Run Checkout
