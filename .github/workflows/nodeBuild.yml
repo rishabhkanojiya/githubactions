@@ -53,7 +53,7 @@ jobs:
       isConfig: ${{fromJson(steps.set_var.outputs.versionJson).configs}}
       isDryrun: ${{fromJson(steps.set_var.outputs.versionJson).dryrun}}
       isDevOnly: ${{fromJson(steps.set_var.outputs.versionJson).isDevOnly}}
-      project_folder: ${{inputs.project_folder}}
+      workingDirectory: ${{inputs.project_folder}}
 
     steps:
       - name: Run Checkout
