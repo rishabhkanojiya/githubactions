@@ -19,7 +19,7 @@ on:
   # The action in the preceding example will be executed once the code is pushed/merged in the "main" and "prod" branches.
 
 env:
-  project-folder: Dot.net.files.test.web
+  project_folder: Dot.net.files.test.web
 
 jobs:
   defineBaseDirectory:
@@ -32,7 +32,8 @@ jobs:
       - name: Setting Up Working Directory Using Output
         id: setDirectory
         run: |
-          echo "::set-output name=workingDirectory::$project-folder"
+          echo "some var: $SOME_VAR"
+          echo "::set-output name=workingDirectory::$project_folder"
 
   build:
     name: Setup
