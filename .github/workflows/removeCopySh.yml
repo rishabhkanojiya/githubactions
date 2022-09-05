@@ -21,10 +21,6 @@ on:
     secrets:
       AWS_S3_BUCKET:
         required: true
-      AWS_ACCESS_KEY_ID:
-        required: true
-      AWS_SECRET_ACCESS_KEY:
-        required: true
       SOURCE_DIR:
         required: true
       DEST_DIR:
@@ -32,6 +28,14 @@ on:
       BACKUP_SOURCE_DIR:
         required: true
       BACKUP_DEST_DIR:
+        required: true
+      PROD_S3_KEY:
+        required: true
+      INT_S3_KEY:
+        required: true
+      PROD_SECRET_KEY:
+        required: true
+      INT_SECRET_KEY:
         required: true
 
 jobs:
@@ -68,8 +72,8 @@ jobs:
         run: bash ./public/deploy/build.sh
         env:
           AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_ACCESS_KEY_ID: ${{ inputs.IS_PROD == 'true' && secrets.PROD_S3_KEY || secrets.INT_S3_KEY }}
+          AWS_SECRET_ACCESS_KEY: ${{ inputs.IS_PROD == 'true' && secrets.PROD_SECRET_KEY || secrets.INT_SECRET_KEY }}
           SOURCE_DIR_COPY: ./build
           DEST_DIR_COPY: ${{ secrets.DEST_DIR }}
           SOURCE_DIR_BACKUP: ${{ secrets.BACKUP_SOURCE_DIR }}
