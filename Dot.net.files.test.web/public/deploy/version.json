@@ -7,5 +7,5 @@
   "main": true,
   "configs": true,
   "dryrun": false,
-  "isDevOnly": false
+  "isDevOnly": true
 }
