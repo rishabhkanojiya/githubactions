@@ -2,6 +2,10 @@ name: Creating and Caching Node build
 
 on:
   workflow_call:
+    inputs:
+      workingDir:
+        type: string
+
     outputs:
       versionJson:
         description: "Version number in JSON file"

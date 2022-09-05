@@ -18,15 +18,15 @@ on:
   # for example : Branches: [main, prod]
   # The action in the preceding example will be executed once the code is pushed/merged in the "main" and "prod" branches.
 
-defaults:
-  run:
-    working-directory: Dot.net.files.test.web
-    # "defaults" and "working-directory: Dot.net.files.test.web" are used here so that the job can look in this folder for the "package.json" file.
+env:
+  WORKING_DIRECTORY_KEY: Dot.net.files.test.web
 
 jobs:
   build:
     name: Setup
     uses: ./.github/workflows/nodeBuild.yml
+    with:
+      workingDir: ${{  env.WORKING_DIRECTORY_KEY }}
 
   css:
     name: Uploading CSS
@@ -35,6 +35,7 @@ jobs:
     with:
       args: "--exclude '*' --include 'css/*' ${{ needs.build.outputs.isDryrun == 'true' && '--dryrun' || ''}}"
       shouldRun: ${{ needs.build.outputs.isCss == 'true' }}
+      workingDir: ${{  env.WORKING_DIRECTORY_KEY }}
       version: ${{ needs.build.outputs.versionJson }}
       IS_PROD: "false"
       IS_RM: "true"
@@ -50,6 +51,7 @@ jobs:
     with:
       args: "--exclude '*' --include 'images/*' ${{ needs.build.outputs.isDryrun == 'true' && '--dryrun' || ''}}"
       shouldRun: ${{ needs.build.outputs.isImage == 'true' }}
+      workingDir: ${{  env.WORKING_DIRECTORY_KEY }}
       version: ${{ needs.build.outputs.versionJson }}
       IS_PROD: "false"
     secrets: inherit
@@ -61,6 +63,7 @@ jobs:
     with:
       args: "--exclude '*' --include 'translations/*' ${{ needs.build.outputs.isDryrun == 'true' && '--dryrun' || ''}}"
       shouldRun: ${{ needs.build.outputs.isTrans == 'true' }}
+      workingDir: ${{  env.WORKING_DIRECTORY_KEY }}
       version: ${{ needs.build.outputs.versionJson }}
       IS_PROD: "false"
       IS_RM: "true"
@@ -73,6 +76,7 @@ jobs:
     with:
       args: "--exclude '*' --include 'configs/*' ${{ needs.build.outputs.isDryrun == 'true' && '--dryrun' || ''}}"
       shouldRun: ${{ needs.build.outputs.isConfig == 'true' }}
+      workingDir: ${{  env.WORKING_DIRECTORY_KEY }}
       version: ${{ needs.build.outputs.versionJson }}
       IS_PROD: "false"
       IS_RM: "true"
@@ -85,6 +89,7 @@ jobs:
     with:
       args: "--exclude '*' --include 'js/*' --include 'asset-manifest.json' --include 'static/*' ${{ needs.build.outputs.isDryrun == 'true' && '--dryrun' || ''}}"
       shouldRun: ${{ needs.build.outputs.isMain == 'true' }}
+      workingDir: ${{  env.WORKING_DIRECTORY_KEY }}
       version: ${{ needs.build.outputs.versionJson }}
       IS_PROD: "false"
       IS_RM: "true"
@@ -98,6 +103,7 @@ jobs:
     with:
       args: "--exclude '*' --include 'css/*' ${{ needs.build.outputs.isDryrun == 'true' && '--dryrun' || ''}}"
       shouldRun: ${{ needs.css.result == 'success' }}
+      workingDir: ${{  env.WORKING_DIRECTORY_KEY }}
       version: ${{ needs.build.outputs.versionJson }}
       IS_PROD: "true"
       IS_RM: "true"
@@ -111,6 +117,7 @@ jobs:
     with:
       args: "--exclude '*' --include 'images/*' ${{ needs.build.outputs.isDryrun == 'true' && '--dryrun' || ''}}"
       shouldRun: ${{ needs.images.result == 'success' }}
+      workingDir: ${{  env.WORKING_DIRECTORY_KEY }}
       version: ${{ needs.build.outputs.versionJson }}
       IS_PROD: "true"
     secrets: inherit
@@ -123,6 +130,7 @@ jobs:
     with:
       args: "--exclude '*' --include 'translations/*' ${{ needs.build.outputs.isDryrun == 'true' && '--dryrun' || ''}}"
       shouldRun: ${{ needs.translations.result == 'success' }}
+      workingDir: ${{  env.WORKING_DIRECTORY_KEY }}
       version: ${{ needs.build.outputs.versionJson }}
       IS_PROD: "true"
       IS_RM: "true"
@@ -136,6 +144,7 @@ jobs:
     with:
       args: "--exclude '*' --include 'configs/*' ${{ needs.build.outputs.isDryrun == 'true' && '--dryrun' || ''}}"
       shouldRun: ${{ needs.configs.result == 'success' }}
+      workingDir: ${{  env.WORKING_DIRECTORY_KEY }}
       version: ${{ needs.build.outputs.versionJson }}
       IS_RM: "true"
       IS_PROD: "true"
@@ -149,6 +158,7 @@ jobs:
     with:
       args: "--exclude '*' --include 'js/*' --include 'asset-manifest.json' --include 'static/*' ${{ needs.build.outputs.isDryrun == 'true' && '--dryrun' || ''}}"
       shouldRun: ${{ needs.javascript.result == 'success' }}
+      workingDir: ${{  env.WORKING_DIRECTORY_KEY }}
       version: ${{ needs.build.outputs.versionJson }}
       IS_PROD: "true"
       IS_RM: "true"
