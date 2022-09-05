@@ -1,6 +1,6 @@
 {
   "name": "github-action-build",
-  "version": "4.3.3",
+  "version": "4.3.5",
   "css": true,
   "trans": true,
   "images": true,
