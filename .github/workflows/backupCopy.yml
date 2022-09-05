@@ -30,8 +30,6 @@ on:
         required: true
       BACKUP_DEST_DIR:
         required: true
-      WORKING_DIRECTORY_KEY:
-        required: true
 
 jobs:
   DeployProd:

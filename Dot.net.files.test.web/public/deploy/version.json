@@ -1,11 +1,11 @@
 {
   "name": "github-action-build",
   "version": "4.3.5",
-  "css": false,
-  "trans": false,
+  "css": true,
+  "trans": true,
   "images": true,
-  "main": false,
-  "configs": false,
+  "main": true,
+  "configs": true,
   "dryrun": false,
   "isDevOnly": false
 }
