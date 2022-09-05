@@ -24,6 +24,7 @@ env:
 jobs:
   defineBaseDirectory:
     name: Define Base Directory
+    runs-on: ubuntu-latest
     outputs:
       workingDirectory: ${{ steps.setDirectory.outputs.workingDirectory }}
 
