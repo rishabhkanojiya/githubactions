@@ -64,7 +64,8 @@ true or false for uploading only CSS files.
   "images": true,
   "main": true,
   "configs": true,
-  "dryrun": false
+  "dryrun": false,
+  "isDevOnly": false
 }
 
 ```
@@ -97,7 +98,7 @@ Get a slack notification on a channel by using a webhook saved in the secret `SL
     <img align="center" width="450" src="https://user-images.githubusercontent.com/30200462/186758844-a22c2481-55fc-41b8-8759-cada62a2ff4c.png">
 </p>
 
-## VALUE USED :-
+## VALUE USED (Different Bucket)
 
 | Key               | Value | Location     | Required |
 | ----------------- | ----- | ------------ | -------- |
@@ -106,17 +107,41 @@ Get a slack notification on a channel by using a webhook saved in the secret `SL
 | `PROD_S3_KEY`     |       | `secret env` | **Yes**  |
 | `PROD_SECRET_KEY` |       | `secret env` | **Yes**  |
 
-## Using Environents
+### Using Environents
+
+| Key                 | Value                            | Environent   | Required |
+| ------------------- | -------------------------------- | ------------ | -------- |
+| `AWS_S3_BUCKET`     | `prod-bucket-actions/prodFolder` | `Production` | **Yes**  |
+| `SOURCE_DIR`        | `./Dot.net.files.test.web/build` | `Production` | **Yes**  |
+| `DEST_DIR`          | `season/static-assets/build`     | `Production` | **Yes**  |
+| `BACKUP_SOURCE_DIR` | `season/static-assets/build`     | `Production` | **Yes**  |
+| `BACKUP_DEST_DIR`   | `season/static-assets/backup`    | `Production` | **Yes**  |
+|                     |                                  |              |          |
+| `AWS_S3_BUCKET`     | `int-bucket-actions/intFolder`   | `Dev`        | **Yes**  |
+| `SOURCE_DIR`        | `./Dot.net.files.test.web/build` | `Dev`        | **Yes**  |
+| `DEST_DIR`          | `season/static-assets/build`     | `Dev`        | **Yes**  |
+| `BACKUP_SOURCE_DIR` | `season/static-assets/build`     | `Dev`        | **Yes**  |
+| `BACKUP_DEST_DIR`   | `season/static-assets/backup`    | `Dev`        | **Yes**  |
+
+## VALUE USED (Same Bucket)
+
+| Key               | Value                            | Location     | Required |
+| ----------------- | -------------------------------- | ------------ | -------- |
+| `AWS_S3_BUCKET`   | `main-bucket-actions/prodFolder` | `Production` | **Yes**  |
+| `INT_S3_KEY`      |                                  | `secret env` | **Yes**  |
+| `INT_SECRET_KEY`  |                                  | `secret env` | **Yes**  |
+| `PROD_S3_KEY`     |                                  | `secret env` | **Yes**  |
+| `PROD_SECRET_KEY` |                                  | `secret env` | **Yes**  |
+
+### Using Environents
 
 | Key                 | Value                              | Environent   | Required |
 | ------------------- | ---------------------------------- | ------------ | -------- |
-| `AWS_S3_BUCKET`     | `prod-bucket-actions/prodFolder`   | `Production` | **Yes**  |
 | `SOURCE_DIR`        | `./Dot.net.files.test.web/build`   | `Production` | **Yes**  |
 | `DEST_DIR`          | `prod/season/static-assets/build`  | `Production` | **Yes**  |
 | `BACKUP_SOURCE_DIR` | `prod/season/static-assets/build`  | `Production` | **Yes**  |
 | `BACKUP_DEST_DIR`   | `prod/season/static-assets/backup` | `Production` | **Yes**  |
 |                     |                                    |              |          |
-| `AWS_S3_BUCKET`     | `int-bucket-actions/intFolder`     | `Dev`        | **Yes**  |
 | `SOURCE_DIR`        | `./Dot.net.files.test.web/build`   | `Dev`        | **Yes**  |
 | `DEST_DIR`          | `int/season/static-assets/build`   | `Dev`        | **Yes**  |
 | `BACKUP_SOURCE_DIR` | `int/season/static-assets/build`   | `Dev`        | **Yes**  |
@@ -128,10 +153,7 @@ Get a slack notification on a channel by using a webhook saved in the secret `SL
     ├── ...
     ├── .github
     │   ├── workflows
-    │       ├── newPipeline.yml (WorkFlow File for Int then on Prod - Individual)
-    │       ├── pipeline.yml (WorkFlow File for Int then on Prod)
-    │       ├── int.yml (WorkFlow File for Int)
-    │       ├── prod.yml (WorkFlow File for Prod)
+    │       ├── newPipelineSh.yml (WorkFlow File for Int then on Prod - Individual)
     └── ...
 
 ## Reusable Workflows
@@ -140,9 +162,9 @@ Get a slack notification on a channel by using a webhook saved in the secret `SL
     ├── ...
     ├── .github
     │   ├── workflows
-    │       ├── backupCopy.yml
-    │       ├── newPipeline.yml
-    │       ├── removeCopy.yml
+    │       ├── nodeBuild.yml
+    │       ├── removeCopySh.yml
+    │       ├── slackMessage.yml
     └── ...
 
 ## Files Required :-
@@ -154,5 +176,3 @@ Get a slack notification on a channel by using a webhook saved in the secret `SL
     │       ├── version.json (to version the build and choose what to upload)
     │       ├── build.sh (Simple script file to upload build)
     └── ...
-
-Rishabh Kanojiya : [aws-copy-rm](https://github.com/rishabhkanojiya/aws-copy-rm)
