@@ -99,30 +99,24 @@ Get a slack notification on a channel by using a webhook saved in the secret `SL
 
 ## VALUE USED :-
 
-| Key                      | Value                              | Location     | Required |
-| ------------------------ | ---------------------------------- | ------------ | -------- |
-| `AWS_ACCESS_KEY_ID`      |                                    | `secret env` | **Yes**  |
-| `AWS_SECRET_ACCESS_KEY`  |                                    | `secret env` | **Yes**  |
-| `AWS_S3_BUCKET`          | `copy-rm-test-bucket`              | `secret env` | **Yes**  |
-| `PROD_SOURCE_DIR`        | `./Dot.net.files.test.web/build`   | `secret env` | **Yes**  |
-| `PORD_DEST_DIR`          | `prod/season/static-assets/build`  | `secret env` | **Yes**  |
-| `PROD_BACKUP_SOURCE_DIR` | `prod/season/static-assets/build`  | `secret env` | **Yes**  |
-| `PROD_BACKUP_DEST_DIR`   | `prod/season/static-assets/backup` | `secret env` | **Yes**  |
-| `INT_SOURCE_DIR`         | `./Dot.net.files.test.web/build`   | `secret env` | **Yes**  |
-| `INT_DEST_DIR`           | `int/season/static-assets/build`   | `secret env` | **Yes**  |
-| `INT_BACKUP_SOURCE_DIR`  | `int/season/static-assets/build`   | `secret env` | **Yes**  |
-| `INT_BACKUP_DEST_DIR`    | `int/season/static-assets/backup`  | `secret env` | **Yes**  |
-| `WORKING_DIRECTORY_KEY`  | `Dot.net.files.test.web`           | `secret env` | **Yes**  |
+| Key               | Value | Location     | Required |
+| ----------------- | ----- | ------------ | -------- |
+| `INT_S3_KEY`      |       | `secret env` | **Yes**  |
+| `INT_SECRET_KEY`  |       | `secret env` | **Yes**  |
+| `PROD_S3_KEY`     |       | `secret env` | **Yes**  |
+| `PROD_SECRET_KEY` |       | `secret env` | **Yes**  |
 
 ## Using Environents
 
 | Key                 | Value                              | Environent   | Required |
 | ------------------- | ---------------------------------- | ------------ | -------- |
+| `AWS_S3_BUCKET`     | `prod-bucket-actions/prodFolder`   | `Production` | **Yes**  |
 | `SOURCE_DIR`        | `./Dot.net.files.test.web/build`   | `Production` | **Yes**  |
 | `DEST_DIR`          | `prod/season/static-assets/build`  | `Production` | **Yes**  |
 | `BACKUP_SOURCE_DIR` | `prod/season/static-assets/build`  | `Production` | **Yes**  |
 | `BACKUP_DEST_DIR`   | `prod/season/static-assets/backup` | `Production` | **Yes**  |
 |                     |                                    |              |          |
+| `AWS_S3_BUCKET`     | `int-bucket-actions/intFolder`     | `Dev`        | **Yes**  |
 | `SOURCE_DIR`        | `./Dot.net.files.test.web/build`   | `Dev`        | **Yes**  |
 | `DEST_DIR`          | `int/season/static-assets/build`   | `Dev`        | **Yes**  |
 | `BACKUP_SOURCE_DIR` | `int/season/static-assets/build`   | `Dev`        | **Yes**  |
