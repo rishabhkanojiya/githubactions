@@ -37,10 +37,6 @@ on:
         description: "Setup Working Directory"
         value: ${{ jobs.readJson.outputs.workingDirectory }}
 
-    secrets:
-      WORKING_DIRECTORY_KEY:
-        required: true
-
 jobs:
   readJson:
     name: Read Input File
@@ -48,7 +44,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: ${{ secrets.WORKING_DIRECTORY_KEY }}
+        working-directory: ${{ inputs.project_folder }}
         # "defaults" and "working-directory: Dot.net.files.test.web" are used here so that the job can look in this folder for the "package.json" file.
 
     outputs:

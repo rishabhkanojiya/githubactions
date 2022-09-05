@@ -18,6 +18,9 @@ on:
   # for example : Branches: [main, prod]
   # The action in the preceding example will be executed once the code is pushed/merged in the "main" and "prod" branches.
 
+env:
+  project_folder: Dot.net.files.test.web
+
 jobs:
   defineBaseDirectory:
     name: Define Base Directory
@@ -29,10 +32,8 @@ jobs:
       - name: Setting Up Working Directory Using Output
         id: setDirectory
         run: |
-          echo "some var: $WORKING_DIRECTORY_KEY"
-          echo "::set-output name=workingDirectory::$WORKING_DIRECTORY_KEY"
-        env:
-          WORKING_DIRECTORY_KEY: ${{ secrets.WORKING_DIRECTORY_KEY }}
+          echo "some var: $project_folder"
+          echo "::set-output name=workingDirectory::$project_folder"
 
   build:
     name: Setup
@@ -40,7 +41,6 @@ jobs:
     uses: ./.github/workflows/nodeBuild.yml
     with:
       project_folder: ${{needs.defineBaseDirectory.outputs.workingDirectory}}
-    secrets: inherit
 
   css:
     name: Uploading CSS
