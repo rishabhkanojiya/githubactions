@@ -40,6 +40,7 @@ jobs:
     uses: ./.github/workflows/nodeBuild.yml
     with:
       project_folder: ${{needs.defineBaseDirectory.outputs.workingDirectory}}
+    secrets: inherit
 
   css:
     name: Uploading CSS
