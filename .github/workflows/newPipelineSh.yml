@@ -32,7 +32,7 @@ jobs:
           echo "some var: $WORKING_DIRECTORY_KEY"
           echo "::set-output name=workingDirectory::$WORKING_DIRECTORY_KEY"
         env:
-          AWS_S3_BUCKET: ${{ secrets.WORKING_DIRECTORY_KEY }}
+          WORKING_DIRECTORY_KEY: ${{ secrets.WORKING_DIRECTORY_KEY }}
 
   build:
     name: Setup
