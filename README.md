@@ -112,13 +112,13 @@ Get a slack notification on a channel by using a webhook saved in the secret `SL
 | Key                 | Value                            | Environent   | Required |
 | ------------------- | -------------------------------- | ------------ | -------- |
 | `AWS_S3_BUCKET`     | `prod-bucket-actions/prodFolder` | `Production` | **Yes**  |
-| `SOURCE_DIR`        | `./Dot.net.files.test.web/build` | `Production` | **Yes**  |
+| `SOURCE_DIR`        | `.build`                         | `Production` | **Yes**  |
 | `DEST_DIR`          | `season/static-assets/build`     | `Production` | **Yes**  |
 | `BACKUP_SOURCE_DIR` | `season/static-assets/build`     | `Production` | **Yes**  |
 | `BACKUP_DEST_DIR`   | `season/static-assets/backup`    | `Production` | **Yes**  |
 |                     |                                  |              |          |
 | `AWS_S3_BUCKET`     | `int-bucket-actions/intFolder`   | `Dev`        | **Yes**  |
-| `SOURCE_DIR`        | `./Dot.net.files.test.web/build` | `Dev`        | **Yes**  |
+| `SOURCE_DIR`        | `.build`                         | `Dev`        | **Yes**  |
 | `DEST_DIR`          | `season/static-assets/build`     | `Dev`        | **Yes**  |
 | `BACKUP_SOURCE_DIR` | `season/static-assets/build`     | `Dev`        | **Yes**  |
 | `BACKUP_DEST_DIR`   | `season/static-assets/backup`    | `Dev`        | **Yes**  |
@@ -137,12 +137,12 @@ Get a slack notification on a channel by using a webhook saved in the secret `SL
 
 | Key                 | Value                              | Environent   | Required |
 | ------------------- | ---------------------------------- | ------------ | -------- |
-| `SOURCE_DIR`        | `./Dot.net.files.test.web/build`   | `Production` | **Yes**  |
+| `SOURCE_DIR`        | `.build`                           | `Production` | **Yes**  |
 | `DEST_DIR`          | `prod/season/static-assets/build`  | `Production` | **Yes**  |
 | `BACKUP_SOURCE_DIR` | `prod/season/static-assets/build`  | `Production` | **Yes**  |
 | `BACKUP_DEST_DIR`   | `prod/season/static-assets/backup` | `Production` | **Yes**  |
 |                     |                                    |              |          |
-| `SOURCE_DIR`        | `./Dot.net.files.test.web/build`   | `Dev`        | **Yes**  |
+| `SOURCE_DIR`        | `.build`                           | `Dev`        | **Yes**  |
 | `DEST_DIR`          | `int/season/static-assets/build`   | `Dev`        | **Yes**  |
 | `BACKUP_SOURCE_DIR` | `int/season/static-assets/build`   | `Dev`        | **Yes**  |
 | `BACKUP_DEST_DIR`   | `int/season/static-assets/backup`  | `Dev`        | **Yes**  |
