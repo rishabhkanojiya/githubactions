@@ -77,7 +77,7 @@ jobs:
           AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
           AWS_ACCESS_KEY_ID: ${{ inputs.IS_PROD == 'true' && secrets.PROD_S3_KEY || secrets.INT_S3_KEY }}
           AWS_SECRET_ACCESS_KEY: ${{ inputs.IS_PROD == 'true' && secrets.PROD_SECRET_KEY || secrets.INT_SECRET_KEY }}
-          SOURCE_DIR_COPY: ./build
+          SOURCE_DIR_COPY: ${{ inputs.IS_STATIC == 'true' && './public' || secrets.SOURCE_DIR }}
           DEST_DIR_COPY: ${{ secrets.DEST_DIR }}
           SOURCE_DIR_BACKUP: ${{ secrets.BACKUP_SOURCE_DIR }}
           DEST_DIR_BACKUP: ${{ secrets.BACKUP_DEST_DIR }}

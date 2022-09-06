@@ -10,8 +10,8 @@ on:
   workflow_dispatch:
     branches: [main]
 
-  push:
-    branches: [main]
+  # push:
+  #   branches: [main]
 
   # the "push" action begins once the code is pushed/merged in the "main" branch.
   # You can add multiple branches too.
@@ -53,6 +53,7 @@ jobs:
       version: ${{ needs.build.outputs.versionJson }}
       IS_PROD: "false"
       IS_RM: "true"
+      IS_STATIC: "true"
     secrets: inherit
 
   # IS_PROD:- ("true"/"false")  Flag to specify environment and to create backup
@@ -68,6 +69,7 @@ jobs:
       shouldRun: ${{ needs.build.outputs.isImage == 'true' }}
       version: ${{ needs.build.outputs.versionJson }}
       IS_PROD: "false"
+      IS_STATIC: "true"
     secrets: inherit
 
   translations:
@@ -81,6 +83,7 @@ jobs:
       version: ${{ needs.build.outputs.versionJson }}
       IS_PROD: "false"
       IS_RM: "true"
+      IS_STATIC: "true"
     secrets: inherit
 
   configs:
@@ -94,6 +97,7 @@ jobs:
       version: ${{ needs.build.outputs.versionJson }}
       IS_PROD: "false"
       IS_RM: "true"
+      IS_STATIC: "true"
     secrets: inherit
 
   javascript:
@@ -121,6 +125,7 @@ jobs:
       version: ${{ needs.build.outputs.versionJson }}
       IS_PROD: "true"
       IS_RM: "true"
+      IS_STATIC: "true"
     secrets: inherit
 
   prodImages:
@@ -134,6 +139,7 @@ jobs:
       shouldRun: ${{ needs.images.result == 'success' }}
       version: ${{ needs.build.outputs.versionJson }}
       IS_PROD: "true"
+      IS_STATIC: "true"
     secrets: inherit
 
   prodTranslations:
@@ -148,6 +154,7 @@ jobs:
       version: ${{ needs.build.outputs.versionJson }}
       IS_PROD: "true"
       IS_RM: "true"
+      IS_STATIC: "true"
     secrets: inherit
 
   prodConfigs:
@@ -162,6 +169,7 @@ jobs:
       version: ${{ needs.build.outputs.versionJson }}
       IS_RM: "true"
       IS_PROD: "true"
+      IS_STATIC: "true"
     secrets: inherit
 
   prodJavascript:
